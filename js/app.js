@@ -74,6 +74,15 @@ function champs(b, sc) {
       ],
     },
     {
+      titre: "Financement",
+      champs: [
+        { k: "apport", label: "Apport", min: 0, max: 300000, pas: 5000, unite: "€" },
+        { k: "taux", label: "Taux du crédit", min: 0, max: 7, pas: 0.05, unite: "%" },
+        { k: "duree", label: "Durée", min: 5, max: 30, pas: 1, unite: "ans" },
+        { k: "assuranceEmprunteurPct", label: "Assurance emprunteur", min: 0, max: 0.8, pas: 0.01, unite: "%/an" },
+      ],
+    },
+    {
       titre: "Location",
       mode: true,
       champs: [...location, { k: "vacancePct", label: "Vacance locative", min: 0, max: 25, pas: 1, unite: "%" }],
@@ -87,15 +96,6 @@ function champs(b, sc) {
         { k: "assurancePNO", label: "Assurance PNO", min: 0, max: 800, pas: 10, unite: "€" },
         { k: "entretienPct", label: "Entretien courant", min: 0, max: 10, pas: 0.5, unite: "% loyers" },
         { k: "gestionPct", label: "Gestion locative", min: 0, max: 10, pas: 0.5, unite: "% loyers" },
-      ],
-    },
-    {
-      titre: "Financement",
-      champs: [
-        { k: "apport", label: "Apport", min: 0, max: 300000, pas: 5000, unite: "€" },
-        { k: "taux", label: "Taux du crédit", min: 0, max: 7, pas: 0.05, unite: "%" },
-        { k: "duree", label: "Durée", min: 5, max: 30, pas: 1, unite: "ans" },
-        { k: "assuranceEmprunteurPct", label: "Assurance emprunteur", min: 0, max: 0.8, pas: 0.01, unite: "%/an" },
       ],
     },
   ];
