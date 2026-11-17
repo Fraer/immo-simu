@@ -1,5 +1,6 @@
 import { REGIMES, calculer, regimeParDefaut, scenarioParDefaut } from "./calc.js";
 import { cascade, sensibilitePrix, tornado } from "./charts.js";
+import { GLOSSAIRE } from "./glossaire.js";
 import { VERSION } from "./version.js";
 
 const BIEN_PAR_DEFAUT = "le-cannet-gr876";
@@ -118,6 +119,29 @@ function el(tag, attrs = {}, ...enfants) {
 }
 
 let aides = [];
+let nInfos = 0;
+
+// "i" button opening a short explanation (native popover: click, keyboard, Esc and outside click close it).
+function info(cle) {
+  const g = GLOSSAIRE[cle];
+  if (!g) return null;
+  const id = `info-${++nInfos}`;
+  const bulle = el("div", { id, popover: "auto", class: "info-bulle", role: "tooltip" }, el("strong", {}, g.titre), el("p", {}, g.texte));
+  const bouton = el("button", { type: "button", class: "info", popovertarget: id, "aria-label": `Explication : ${g.titre}` }, "i");
+  bulle.addEventListener("toggle", (e) => {
+    if (e.newState !== "open") return;
+    const b = bouton.getBoundingClientRect();
+    const larg = bulle.offsetWidth;
+    const gauche = Math.min(Math.max(8, b.left + b.width / 2 - larg / 2), innerWidth - larg - 8);
+    const bas = b.bottom + 6 + bulle.offsetHeight > innerHeight;
+    bulle.style.left = `${gauche}px`;
+    bulle.style.top = `${bas ? Math.max(8, b.top - 6 - bulle.offsetHeight) : b.bottom + 6}px`;
+  });
+  return el("span", { class: "info-ancre" }, bouton, bulle);
+}
+
+// Label text followed by its "i" button when the glossary explains it.
+const etiquette = (texte, cle) => el("span", { class: "etiquette" }, texte, info(cle));
 
 function rendreControles() {
   const racine = $("#controles");
@@ -165,7 +189,7 @@ function rendreChamp(c) {
   const ligne = el(
     "div",
     { class: "champ" },
-    el("div", { class: "ligne" }, el("label", { for: id }, c.label), el("span", { class: "saisie" }, nombre, el("span", { class: "unite" }, c.unite))),
+    el("div", { class: "ligne" }, el("label", { for: id }, etiquette(c.label, c.k)), el("span", { class: "saisie" }, nombre, el("span", { class: "unite" }, c.unite))),
     range,
   );
   if (listId) ligne.append(el("datalist", { id: listId }, c.reperes.filter(Boolean).map((v) => el("option", { value: v }))));
@@ -184,7 +208,7 @@ function rendreFiscalite() {
     el(
       "div",
       { class: "ligne" },
-      el("label", { for: "regime" }, "Régime"),
+      el("label", { for: "regime" }, etiquette("Régime", "regime")),
       el(
         "select",
         { id: "regime", onchange: (e) => { s.regime = e.target.value; rendreControles(); rafraichir(); } },
@@ -196,7 +220,7 @@ function rendreFiscalite() {
     el(
       "div",
       { class: "ligne" },
-      el("label", { for: "tmi" }, "Tranche marginale d'imposition"),
+      el("label", { for: "tmi" }, etiquette("Tranche marginale d'imposition", "tmi")),
       el(
         "select",
         { id: "tmi", onchange: (e) => { s.tmi = Number(e.target.value); rafraichir(); } },
@@ -206,18 +230,25 @@ function rendreFiscalite() {
     rendreChamp({ k: "prelevementsSociauxPct", label: "Prélèvements sociaux", min: 0, max: 20, pas: 0.1, unite: "%" }),
     ...(s.regime === "sci-ir"
       ? [
-          rendreChamp({ k: "associes", label: "Nombre d'associés (parts égales)", min: 1, max: 6, pas: 1, unite: "" }),
+          el("div", { class: "ligne" }, el("span", {}, "Associés"), el("span", { class: "fixe" }, `${s.associes} (parts égales)`)),
           rendreChamp({ k: "autresRevenusFonciers", label: "Autres revenus fonciers nets de la SCI", min: 0, max: 30000, pas: 100, unite: "€/an" }),
-          el("p", { class: "note" }, `${acquereur?.note ?? ""} Un déficit foncier du nouveau bien s'impute d'abord sur ces revenus (économie d'impôt). L'imputation sur le revenu global (10 700 €) n'est pas modélisée. Micro-foncier exclu : il ne s'applique pas aux associés qui ne détiennent que des parts de SCI.`),
         ]
       : []),
-    el("p", { class: "note" }, "Année type, hors déficit foncier ou report : les travaux ne sont pas déduits en réel foncier, ils sont amortis sur 15 ans en LMNP réel."),
+    el(
+      "details",
+      { class: "repli" },
+      el("summary", {}, "Hypothèses et limites du calcul"),
+      s.regime === "sci-ir"
+        ? el("p", { class: "note" }, `${acquereur?.note ?? ""} Un déficit foncier du nouveau bien s'impute d'abord sur ces revenus (économie d'impôt). L'imputation sur le revenu global (10 700 €) n'est pas modélisée. Micro-foncier exclu : il ne s'applique pas aux associés qui ne détiennent que des parts de SCI.`)
+        : null,
+      el("p", { class: "note" }, "Année type, hors déficit foncier ou report : les travaux ne sont pas déduits en réel foncier, ils sont amortis sur 15 ans en LMNP réel."),
+    ),
   );
   return fs;
 }
 
 function rendreRisques() {
-  const fs = el("fieldset", {}, el("legend", {}, "Facteurs de risque"));
+  const fs = el("fieldset", {}, el("legend", {}, etiquette("Facteurs de risque", "risques")));
   if (!bien.risques?.length) return fs;
   for (const r of bien.risques) {
     const id = `r-${r.id}`;
@@ -247,8 +278,8 @@ function decrireEffets(e) {
   return `(${parts.join(", ")})`;
 }
 
-function tuile(titre, valeur, sous, ton) {
-  return el("div", { class: `tuile ${ton ?? ""}` }, el("div", { class: "tuile-titre" }, titre), el("div", { class: "tuile-valeur" }, valeur), el("div", { class: "tuile-sous" }, sous));
+function tuile(titre, cle, valeur, sous, ton) {
+  return el("div", { class: `tuile ${ton ?? ""}` }, el("div", { class: "tuile-titre" }, etiquette(titre, cle)), el("div", { class: "tuile-valeur" }, valeur), el("div", { class: "tuile-sous" }, sous));
 }
 
 function table(titre, lignes) {
@@ -279,6 +310,8 @@ function rendreGraphiques(r) {
     { k: "chargesCopro", label: "Charges copro", fmt: (v) => `${Math.round(v)} €` },
     { k: "taxeFonciere", label: "Taxe foncière", fmt: (v) => `${Math.round(v)} €` },
   ]);
+  for (const [sel, cle] of [["#g-sensibilite", "sensibilite"], ["#g-tornado", "tornado"], ["#g-cascade", "cascade"]])
+    for (const cap of document.querySelectorAll(`${sel} figcaption`)) cap.append(info(cle));
 }
 
 function rendreResultats() {
@@ -288,10 +321,10 @@ function rendreResultats() {
   const signe = (x) => (x > 0 ? "+" : "") + eur.format(x);
 
   $("#kpis").replaceChildren(
-    tuile("Rendement brut", fmtPct(r.rendementBrut), `${eur.format(r.loyersTheoriques)} / an sur ${eur.format(r.coutTotal)}`),
-    tuile("Rendement net", fmtPct(r.rendementNet), "après vacance et charges"),
-    tuile("Rendement net-net", fmtPct(r.rendementNetNet), r.impot < 0 ? `économie d'impôt ${eur.format(-r.impot)}/an (déficit foncier)` : `après impôt (${eur.format(r.impot)}/an)`),
-    tuile("Cash-flow mensuel", signe(cf), `après impôt · ${signe(r.cashFlowAvantImpot)} avant` + (r.associes > 1 ? ` · ${signe(cf / r.associes)} par associé` : ""), cf >= 0 ? "positif" : "negatif"),
+    tuile("Rendement brut", "rendementBrut", fmtPct(r.rendementBrut), `${eur.format(r.loyersTheoriques)} / an sur ${eur.format(r.coutTotal)}`),
+    tuile("Rendement net", "rendementNet", fmtPct(r.rendementNet), "après vacance et charges"),
+    tuile("Rendement net-net", "rendementNetNet", fmtPct(r.rendementNetNet), r.impot < 0 ? `économie d'impôt ${eur.format(-r.impot)}/an (déficit foncier)` : `après impôt (${eur.format(r.impot)}/an)`),
+    tuile("Cash-flow mensuel", "cashFlow", signe(cf), `après impôt · ${signe(r.cashFlowAvantImpot)} avant` + (r.associes > 1 ? ` · ${signe(cf / r.associes)} par associé` : ""), cf >= 0 ? "positif" : "negatif"),
   );
 
   $("#alertes").replaceChildren(...r.alertes.map((a) => el("p", { class: "alerte", role: "status" }, a)));
@@ -383,7 +416,7 @@ function lireUrl() {
   const mode = bien.locations[p.get("mode")] ? p.get("mode") : bien.defauts.mode;
   const sc = scenarioParDefaut(bien, mode, acquereur);
   for (const [k, v] of p) {
-    if (k === "mode") continue;
+    if (k === "mode" || k === "associes") continue; // partners are fixed by the buyer's data
     if (k === "risques") sc.risques = v.split(",").filter((id) => bien.risques?.some((r) => r.id === id));
     else if (k === "regime") { if (REGIMES[v]) sc.regime = v; }
     else if (typeof sc[k] === "number" && Number.isFinite(Number(v))) sc[k] = Number(v);
