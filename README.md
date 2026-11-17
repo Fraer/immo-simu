@@ -20,7 +20,7 @@ En SCI à l'IR, le résultat est calculé au réel foncier puis réparti par ass
 
 ## Entête
 
-Logo attendu dans `assets/flv-invest-logo.png` (affiché en 40 px de haut, texte « FLV Invest » si absent). Version de l'application (semver) dans `js/version.js`.
+Logo dans `assets/flv-invest-logo.svg` (provisoire, à remplacer par le fichier officiel) (affiché en 40 px de haut, texte « FLV Invest » si absent). Version de l'application (semver) dans `js/version.js`.
 
 ## Lancer en local
 

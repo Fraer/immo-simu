@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 150 40" width="150" height="40" role="img" aria-label="FLV Invest">
+  <!-- Provisional logo: replace with the official FLV Invest file. -->
+  <g fill="#1f5fa8">
+    <path d="M3 20 L19 6 L35 20 L31 20 L31 36 L7 36 L7 20 Z"/>
+  </g>
+  <g fill="#ffffff">
+    <rect x="11" y="22" width="5" height="14"/>
+    <rect x="18" y="17" width="5" height="19"/>
+    <rect x="25" y="24" width="3" height="12"/>
+  </g>
+  <g fill="#1f5fa8">
+    <rect x="12" y="24" width="1.5" height="1.5"/><rect x="12" y="28" width="1.5" height="1.5"/>
+    <rect x="19" y="19" width="1.5" height="1.5"/><rect x="21" y="19" width="1.5" height="1.5"/>
+    <rect x="19" y="23" width="1.5" height="1.5"/><rect x="21" y="23" width="1.5" height="1.5"/>
+    <rect x="19" y="27" width="1.5" height="1.5"/><rect x="21" y="27" width="1.5" height="1.5"/>
+  </g>
+  <text x="42" y="23" font-family="Arial, Helvetica, sans-serif" font-weight="700" font-size="20" fill="#1f5fa8" letter-spacing="1">FLV</text>
+  <text x="42" y="35" font-family="Arial, Helvetica, sans-serif" font-weight="600" font-size="9.5" fill="#6b6b6b" letter-spacing="3.2">INVEST</text>
+</svg>

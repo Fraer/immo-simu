@@ -47,7 +47,13 @@ body {
 
 header, main { max-width: 1200px; margin: 0 auto; padding: 0 16px; }
 header { padding-top: 24px; padding-bottom: 8px; }
-.marque { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.entete-ligne { display: flex; align-items: center; gap: 16px; margin-bottom: 6px; }
+.entete-ligne h1 { flex: 1; min-width: 0; margin: 0; }
+.entete-ligne .version { margin-left: auto; }
+@media (max-width: 640px) {
+  .entete-ligne { flex-wrap: wrap; gap: 8px 16px; }
+  .entete-ligne h1 { order: 1; flex-basis: 100%; }
+}
 #logo { height: 40px; width: auto; display: block; }
 #logo[hidden] { display: none; }
 @media (prefers-color-scheme: dark) { #logo { background: #fff; border-radius: 6px; padding: 3px 6px; } }
