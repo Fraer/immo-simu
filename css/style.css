@@ -45,7 +45,7 @@ body {
   font: 15px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
 
-header, main { max-width: 1200px; margin: 0 auto; padding: 0 16px; }
+header, main { max-width: 1760px; margin: 0 auto; padding: 0 clamp(16px, 2.5vw, 40px); }
 header { padding-top: 24px; padding-bottom: 8px; }
 .entete-ligne { display: flex; align-items: center; gap: 16px; margin-bottom: 6px; }
 .entete-ligne h1 { flex: 1; min-width: 0; margin: 0; }
@@ -220,6 +220,11 @@ tr.total.negatif td { color: var(--negatif); }
 
 /* ---------- Charts ---------- */
 #graphiques { display: grid; gap: 16px; margin: 16px 0; }
+@media (min-width: 1400px) {
+  main { grid-template-columns: minmax(0, 460px) minmax(0, 1fr); gap: 32px; }
+  #graphiques { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  #g-sensibilite { grid-column: 1 / -1; }
+}
 .g-paire { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
 .viz {
   margin: 0;
