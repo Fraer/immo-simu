@@ -1,6 +1,7 @@
 // Pure profitability model. No DOM here, so it can be tested with node.
 
 export const REGIMES = {
+  "sci-ir": { label: "SCI à l'IR (revenus fonciers, réel)", meuble: null },
   "micro-foncier": { label: "Micro-foncier (abattement 30 %)", meuble: false, plafond: 15000 },
   "reel-foncier": { label: "Réel foncier", meuble: false },
   "micro-bic": { label: "LMNP micro-BIC (abattement 50 %)", meuble: true, plafond: 77700 },
@@ -12,20 +13,25 @@ const PART_BATI = 0.85;
 const DUREE_AMORT_BATI = 30;
 const DUREE_AMORT_TRAVAUX = 15;
 
-export function regimeParDefaut(bien, mode) {
+export function regimeParDefaut(bien, mode, acquereur) {
+  if (acquereur?.regime) return acquereur.regime;
   return bien.locations[mode].meuble ? "lmnp-reel" : "reel-foncier";
 }
 
-export function scenarioParDefaut(bien, mode = bien.defauts.mode) {
+// `acquereur` (optional) describes the buyer, e.g. an SCI: tax regime, partners, other rental income.
+export function scenarioParDefaut(bien, mode = bien.defauts.mode, acquereur = null) {
   const loc = bien.locations[mode];
   return {
     ...bien.defauts,
+    ...(acquereur?.tmi !== undefined && { tmi: acquereur.tmi }),
+    associes: acquereur?.associes ?? 1,
+    autresRevenusFonciers: acquereur?.autresRevenusFonciersNets ?? 0,
     mode,
     loyer: loc.loyer ?? 0,
     loyerParChambre: loc.loyerParChambre ?? 0,
     chambres: loc.chambres ?? 0,
     vacancePct: loc.vacancePct,
-    regime: regimeParDefaut(bien, mode),
+    regime: regimeParDefaut(bien, mode, acquereur),
     risques: [],
   };
 }
@@ -101,6 +107,7 @@ export function calculer(bien, s) {
   // Tax (year 1, steady state; renovation works are not deducted, see README)
   const regime = REGIMES[s.regime];
   let baseImposable;
+  let economieDeficit = 0;
   switch (s.regime) {
     case "micro-foncier":
       baseImposable = loyersEncaisses * 0.7;
@@ -111,6 +118,15 @@ export function calculer(bien, s) {
     case "reel-foncier":
       baseImposable = revenuNet - interets - assuranceEmprunteur;
       break;
+    case "sci-ir": {
+      // Transparent SCI: same result as réel foncier, taxed at each partner's level by share.
+      // A deficit is offset against the SCI's other rental income (existing property), which saves tax.
+      baseImposable = revenuNet - interets - assuranceEmprunteur;
+      if (baseImposable < 0) {
+        economieDeficit = Math.min(-baseImposable, Math.max(0, s.autresRevenusFonciers ?? 0));
+      }
+      break;
+    }
     case "lmnp-reel": {
       const amort =
         ((s.prix + notaire) * PART_BATI) / DUREE_AMORT_BATI + travaux / DUREE_AMORT_TRAVAUX;
@@ -120,13 +136,18 @@ export function calculer(bien, s) {
     default:
       baseImposable = 0;
   }
+  const deficit = Math.max(0, -baseImposable);
   baseImposable = Math.max(0, baseImposable);
-  const impot = (baseImposable * (s.tmi + s.prelevementsSociauxPct)) / 100;
+  const tauxImpot = (s.tmi + s.prelevementsSociauxPct) / 100;
+  // Negative when the deficit lowers the tax on the SCI's other rental income.
+  const impot = (baseImposable - economieDeficit) * tauxImpot;
 
   const alertes = [];
   if (regime?.plafond && loyersEncaisses > regime.plafond)
     alertes.push(`${regime.label} : loyers au-dessus du plafond de ${regime.plafond} €, régime non applicable.`);
-  if (regime && regime.meuble !== bien.locations[s.mode].meuble)
+  if (s.regime === "sci-ir" && bien.locations[s.mode].meuble)
+    alertes.push("Location meublée dans une SCI à l'IR : si les recettes meublées dépassent 10 % des recettes, la SCI risque de passer à l'IS. Privilégier la location nue (bail vide, y compris en colocation).");
+  if (regime && regime.meuble !== null && regime.meuble !== bien.locations[s.mode].meuble)
     alertes.push(`${regime.label} ne correspond pas au type de location choisi.`);
 
   const pct = (x) => (coutTotal > 0 ? (x / coutTotal) * 100 : 0);
@@ -148,7 +169,10 @@ export function calculer(bien, s) {
     annuites,
     interets,
     baseImposable,
+    deficit,
+    economieDeficit,
     impot,
+    associes: s.associes ?? 1,
     rendementBrut: pct(loyersTheoriques),
     rendementNet: pct(revenuNet),
     rendementNetNet: pct(revenuNet - impot),

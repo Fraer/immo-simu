@@ -1,6 +1,7 @@
 import { REGIMES, calculer, regimeParDefaut, scenarioParDefaut } from "./calc.js";
 
 const BIEN_PAR_DEFAUT = "le-cannet-gr876";
+const ACQUEREUR_PAR_DEFAUT = "sci-flv";
 
 const eur = new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR", maximumFractionDigits: 0 });
 const num = (d) => new Intl.NumberFormat("fr-FR", { maximumFractionDigits: d, minimumFractionDigits: d });
@@ -8,6 +9,7 @@ const fmtPct = (x, d = 2) => `${num(d).format(x)} %`;
 const kEur = (x) => `${num(0).format(x / 1000)} k€`;
 
 let bien;
+let acquereur = null;
 let s;
 
 // ---------- Control definitions (ranges derive from the property's own figures) ----------
@@ -183,9 +185,9 @@ function rendreFiscalite() {
       el("label", { for: "regime" }, "Régime"),
       el(
         "select",
-        { id: "regime", onchange: (e) => { s.regime = e.target.value; rafraichir(); } },
+        { id: "regime", onchange: (e) => { s.regime = e.target.value; rendreControles(); rafraichir(); } },
         Object.entries(REGIMES)
-          .filter(([, r]) => r.meuble === meuble)
+          .filter(([, r]) => r.meuble === null || r.meuble === meuble)
           .map(([k, r]) => el("option", { value: k, selected: k === s.regime }, r.label)),
       ),
     ),
@@ -200,6 +202,13 @@ function rendreFiscalite() {
       ),
     ),
     rendreChamp({ k: "prelevementsSociauxPct", label: "Prélèvements sociaux", min: 0, max: 20, pas: 0.1, unite: "%" }),
+    ...(s.regime === "sci-ir"
+      ? [
+          rendreChamp({ k: "associes", label: "Nombre d'associés (parts égales)", min: 1, max: 6, pas: 1, unite: "" }),
+          rendreChamp({ k: "autresRevenusFonciers", label: "Autres revenus fonciers nets de la SCI", min: 0, max: 30000, pas: 100, unite: "€/an" }),
+          el("p", { class: "note" }, `${acquereur?.note ?? ""} Un déficit foncier du nouveau bien s'impute d'abord sur ces revenus (économie d'impôt). L'imputation sur le revenu global (10 700 €) n'est pas modélisée. Micro-foncier exclu : il ne s'applique pas aux associés qui ne détiennent que des parts de SCI.`),
+        ]
+      : []),
     el("p", { class: "note" }, "Année type, hors déficit foncier ou report : les travaux ne sont pas déduits en réel foncier, ils sont amortis sur 15 ans en LMNP réel."),
   );
   return fs;
@@ -261,8 +270,8 @@ function rendreResultats() {
   $("#kpis").replaceChildren(
     tuile("Rendement brut", fmtPct(r.rendementBrut), `${eur.format(r.loyersTheoriques)} / an sur ${eur.format(r.coutTotal)}`),
     tuile("Rendement net", fmtPct(r.rendementNet), "après vacance et charges"),
-    tuile("Rendement net-net", fmtPct(r.rendementNetNet), `après impôt (${eur.format(r.impot)}/an)`),
-    tuile("Cash-flow mensuel", signe(cf), `après impôt · ${signe(r.cashFlowAvantImpot)} avant`, cf >= 0 ? "positif" : "negatif"),
+    tuile("Rendement net-net", fmtPct(r.rendementNetNet), r.impot < 0 ? `économie d'impôt ${eur.format(-r.impot)}/an (déficit foncier)` : `après impôt (${eur.format(r.impot)}/an)`),
+    tuile("Cash-flow mensuel", signe(cf), `après impôt · ${signe(r.cashFlowAvantImpot)} avant` + (r.associes > 1 ? ` · ${signe(cf / r.associes)} par associé` : ""), cf >= 0 ? "positif" : "negatif"),
   );
 
   $("#alertes").replaceChildren(...r.alertes.map((a) => el("p", { class: "alerte", role: "status" }, a)));
@@ -293,7 +302,9 @@ function rendreResultats() {
       ...(ch.provisionRisques ? [["Provision gros travaux copro", `−${eur.format(ch.provisionRisques)}`]] : []),
       ["Revenu net de charges", eur.format(r.revenuNet), "total"],
       ["Crédit (mensualités + assurance)", `−${eur.format(r.annuites)}`],
-      [`Impôt + prélèvements sociaux (${REGIMES[s.regime].label})`, `−${eur.format(r.impot)}`],
+      r.impot < 0
+        ? [`Économie d'impôt, déficit imputé (${REGIMES[s.regime].label})`, `+${eur.format(-r.impot)}`]
+        : [`Impôt + prélèvements sociaux (${REGIMES[s.regime].label})`, `−${eur.format(r.impot)}`],
       ["Cash-flow annuel", signe(cf * 12), cf >= 0 ? "total positif" : "total negatif"],
     ]),
     table("Crédit", [
@@ -301,8 +312,18 @@ function rendreResultats() {
       [`Mensualité (${s.duree} ans à ${fmtPct(s.taux)})`, eur.format(r.mensualite)],
       ["Assurance emprunteur / mois", eur.format(r.assuranceEmprunteur / 12)],
       ["Intérêts année 1", eur.format(r.interets)],
-      ["Base imposable année 1", eur.format(r.baseImposable)],
+      r.deficit > 0 ? ["Déficit foncier année 1", eur.format(r.deficit)] : ["Base imposable année 1", eur.format(r.baseImposable)],
     ]),
+    ...(r.associes > 1
+      ? [
+          table(`Par associé (1/${r.associes})`, [
+            ["Apport", eur.format(s.apport / r.associes)],
+            ["Mensualité de crédit", eur.format((r.mensualite + r.assuranceEmprunteur / 12) / r.associes)],
+            [r.impot < 0 ? "Économie d'impôt / an" : "Impôt / an", eur.format(Math.abs(r.impot) / r.associes)],
+            ["Cash-flow mensuel", signe(cf / r.associes), cf >= 0 ? "total positif" : "total negatif"],
+          ]),
+        ]
+      : []),
   );
 }
 
@@ -316,16 +337,16 @@ function rafraichir() {
 
 function changerMode(mode) {
   const garde = { ...s };
-  s = scenarioParDefaut(bien, mode);
+  s = scenarioParDefaut(bien, mode, acquereur);
   // Keep everything not tied to the rental type.
-  for (const k of ["prix", "notairePct", "travaux", "chargesCopro", "taxeFonciere", "assurancePNO", "entretienPct", "gestionPct", "apport", "taux", "duree", "assuranceEmprunteurPct", "tmi", "prelevementsSociauxPct", "risques"]) s[k] = garde[k];
-  s.regime = regimeParDefaut(bien, mode);
+  for (const k of ["prix", "notairePct", "travaux", "chargesCopro", "taxeFonciere", "assurancePNO", "entretienPct", "gestionPct", "apport", "taux", "duree", "assuranceEmprunteurPct", "tmi", "prelevementsSociauxPct", "associes", "autresRevenusFonciers", "regime", "risques"]) s[k] = garde[k];
+  s.regime = regimeParDefaut(bien, mode, acquereur);
   rendreControles();
   rafraichir();
 }
 
 function ecrireUrl() {
-  const ref = scenarioParDefaut(bien, s.mode);
+  const ref = scenarioParDefaut(bien, s.mode, acquereur);
   const p = new URLSearchParams();
   if (s.mode !== bien.defauts.mode) p.set("mode", s.mode);
   for (const [k, v] of Object.entries(s)) {
@@ -340,7 +361,7 @@ function ecrireUrl() {
 function lireUrl() {
   const p = new URLSearchParams(location.hash.slice(1));
   const mode = bien.locations[p.get("mode")] ? p.get("mode") : bien.defauts.mode;
-  const sc = scenarioParDefaut(bien, mode);
+  const sc = scenarioParDefaut(bien, mode, acquereur);
   for (const [k, v] of p) {
     if (k === "mode") continue;
     if (k === "risques") sc.risques = v.split(",").filter((id) => bien.risques?.some((r) => r.id === id));
@@ -357,6 +378,14 @@ async function demarrer() {
   if (!rep.ok) throw new Error(`Bien introuvable : biens/${id}.json`);
   bien = await rep.json();
 
+  const idAcq = new URLSearchParams(location.search).get("acquereur") ?? ACQUEREUR_PAR_DEFAUT;
+  if (idAcq !== "aucun") {
+    if (!/^[a-z0-9-]+$/.test(idAcq)) throw new Error(`Identifiant d'acquéreur invalide : ${idAcq}`);
+    const ra = await fetch(`acquereurs/${idAcq}.json`);
+    if (!ra.ok) throw new Error(`Acquéreur introuvable : acquereurs/${idAcq}.json`);
+    acquereur = await ra.json();
+  }
+
   document.title = `Simulation · ${bien.titre}`;
   $("#titre").textContent = bien.titre;
   $("#meta").textContent = [
@@ -364,6 +393,7 @@ async function demarrer() {
     `${num(2).format(bien.surface)} m²${bien.terrasse ? ` + terrasse ${bien.terrasse} m²` : ""}`,
     bien.dpe && `DPE ${bien.dpe}`,
     `affiché ${eur.format(bien.prixAffiche)}`,
+    acquereur && `acquéreur : ${acquereur.nom}`,
   ].filter(Boolean).join(" · ");
   $("#source").textContent = bien.source ?? "";
 
@@ -372,7 +402,7 @@ async function demarrer() {
   rafraichir();
 
   $("#reinit").addEventListener("click", () => {
-    s = scenarioParDefaut(bien);
+    s = scenarioParDefaut(bien, bien.defauts.mode, acquereur);
     rendreControles();
     rafraichir();
   });

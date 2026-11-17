@@ -1,0 +1,17 @@
+{
+  "id": "sci-flv",
+  "nom": "SCI FLV",
+  "regime": "sci-ir",
+  "associes": 3,
+  "tmi": 30,
+  "biensExistants": [
+    {
+      "label": "Bien existant",
+      "prixAchat": 100000,
+      "loyerMensuel": 690,
+      "loyerCaveMensuel": 250
+    }
+  ],
+  "autresRevenusFonciersNets": 11280,
+  "note": "Autres revenus fonciers nets de la SCI : par défaut les loyers bruts du bien existant (690 € + 250 € de cave, 12 mois). À corriger de ses charges, taxe foncière et intérêts d'emprunt."
+}

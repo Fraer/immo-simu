@@ -11,6 +11,12 @@ Simulateur de rentabilité locative, page statique (HTML + JS, sans build) prév
 
 Les données d'un bien sont dans `biens/<id>.json`. Ajouter un fichier sur le modèle de `biens/le-cannet-gr876.json` puis ouvrir `index.html?bien=<id>`.
 
+## Acquéreur
+
+La fiscalité de l'acheteur est dans `acquereurs/<id>.json` (par défaut `sci-flv` : SCI FLV à l'IR, 3 associés, bien existant loué 690 € + 250 € de cave). Changer avec `?acquereur=<id>`, ou `?acquereur=aucun` pour un achat en nom propre.
+
+En SCI à l'IR, le résultat est calculé au réel foncier puis réparti par associé. Un déficit foncier du nouveau bien s'impute sur les autres revenus fonciers de la SCI (économie d'impôt). L'imputation sur le revenu global n'est pas modélisée.
+
 ## Lancer en local
 
 ```bash
