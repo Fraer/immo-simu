@@ -17,13 +17,18 @@
   <main>
     <section id="controles" aria-label="Hypothèses"></section>
 
-    <section id="resultats" aria-label="Résultats" aria-live="polite">
-      <div id="kpis"></div>
+    <section id="resultats" aria-label="Résultats">
+      <div id="kpis" aria-live="polite"></div>
       <div id="alertes"></div>
       <div class="actions">
         <button id="partager" type="button">Copier le lien du scénario</button>
         <button id="reinit" type="button" class="secondaire">Réinitialiser</button>
       </div>
+      <section id="graphiques" aria-label="Graphiques">
+        <div id="g-sensibilite" class="g-paire"></div>
+        <div id="g-tornado"></div>
+        <div id="g-cascade"></div>
+      </section>
       <div id="details"></div>
       <p class="note">
         Brut = loyers théoriques / coût total (prix + notaire + travaux).

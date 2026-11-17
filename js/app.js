@@ -1,4 +1,5 @@
 import { REGIMES, calculer, regimeParDefaut, scenarioParDefaut } from "./calc.js";
+import { cascade, sensibilitePrix, tornado } from "./charts.js";
 
 const BIEN_PAR_DEFAUT = "le-cannet-gr876";
 const ACQUEREUR_PAR_DEFAUT = "sci-flv";
@@ -262,8 +263,26 @@ function table(titre, lignes) {
   );
 }
 
+function rendreGraphiques(r) {
+  const prix = champs(bien, s)[0].champs.find((c) => c.k === "prix");
+  sensibilitePrix($("#g-sensibilite"), bien, s, prix);
+  cascade($("#g-cascade"), r);
+  const k = (n) => `${Math.round(n / 1000)} k€`;
+  tornado($("#g-tornado"), bien, s, [
+    { k: "prix", label: "Prix d'achat", fmt: k },
+    { k: "travaux", label: "Travaux", fmt: k },
+    s.mode === "coloc"
+      ? { k: "loyerParChambre", label: "Loyer / chambre", fmt: (v) => `${Math.round(v)} €` }
+      : { k: "loyer", label: "Loyer", fmt: (v) => `${Math.round(v)} €` },
+    { k: "taux", label: "Taux du crédit", fmt: (v) => `${num(2).format(v)} %` },
+    { k: "chargesCopro", label: "Charges copro", fmt: (v) => `${Math.round(v)} €` },
+    { k: "taxeFonciere", label: "Taxe foncière", fmt: (v) => `${Math.round(v)} €` },
+  ]);
+}
+
 function rendreResultats() {
   const r = calculer(bien, s);
+  rendreGraphiques(r);
   const cf = r.cashFlowApresImpot;
   const signe = (x) => (x > 0 ? "+" : "") + eur.format(x);
 
@@ -400,6 +419,12 @@ async function demarrer() {
   s = lireUrl();
   rendreControles();
   rafraichir();
+
+  let attente;
+  new ResizeObserver(() => {
+    clearTimeout(attente);
+    attente = setTimeout(() => rendreGraphiques(calculer(bien, s)), 100);
+  }).observe($("#graphiques"));
 
   $("#reinit").addEventListener("click", () => {
     s = scenarioParDefaut(bien, bien.defauts.mode, acquereur);

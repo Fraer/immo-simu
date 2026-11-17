@@ -4,6 +4,7 @@ Simulateur de rentabilité locative, page statique (HTML + JS, sans build) prév
 
 - Curseurs : prix d'achat (±25 % autour du prix affiché), notaire, travaux, loyer (vide, meublé ou par chambre en colocation), vacance, charges, taxe foncière, crédit, fiscalité.
 - Résultats en direct : rendement brut, net, net-net, cash-flow mensuel, détail de l'opération et du compte annuel.
+- Graphiques : sensibilité du rendement net et du cash-flow au prix, effet de ±20 % sur chaque paramètre (tornado), cascade du loyer au cash-flow.
 - Facteurs de risque optionnels (bruit, emplacement, travaux de copro…) définis par bien.
 - Le scénario est encodé dans l'URL (`#prix=320000&mode=coloc&risques=bruit`) : copier le lien suffit pour le partager.
 

@@ -9,6 +9,10 @@
   --negatif: #b3402f;
   --alerte-bg: #fff4e0;
   --alerte-texte: #7a4b00;
+  --viz-plus: #2a78d6;
+  --viz-moins: #e34948;
+  --viz-total: #8a8984;
+  --viz-grille: #ecebe7;
   color-scheme: light;
 }
 
@@ -24,6 +28,10 @@
     --negatif: #ec8a78;
     --alerte-bg: #3a2c12;
     --alerte-texte: #f2c97a;
+    --viz-plus: #3987e5;
+    --viz-moins: #e66767;
+    --viz-total: #8f8e88;
+    --viz-grille: #2a2a27;
     color-scheme: dark;
   }
 }
@@ -53,7 +61,7 @@ main {
 
 @media (max-width: 860px) {
   main { grid-template-columns: minmax(0, 1fr); }
-  #resultats { order: -1; position: static !important; }
+
 }
 
 fieldset {
@@ -95,7 +103,6 @@ input[type="range"] { width: 100%; accent-color: var(--accent); margin: 6px 0 0;
 .risque label { display: flex; flex-direction: column; font-size: 0.9rem; }
 .risque span, .risque em { color: var(--texte-2); font-size: 0.82rem; }
 
-#resultats { position: sticky; top: 16px; }
 
 #kpis {
   display: grid;
@@ -156,3 +163,50 @@ td { text-align: right; white-space: nowrap; }
 tr.total th, tr.total td { font-weight: 600; color: var(--texte); }
 tr.total.positif td { color: var(--positif); }
 tr.total.negatif td { color: var(--negatif); }
+
+/* ---------- Charts ---------- */
+#graphiques { display: grid; gap: 16px; margin-bottom: 16px; }
+.g-paire { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+.viz {
+  margin: 0;
+  background: var(--surface);
+  border: 1px solid var(--bord);
+  border-radius: 8px;
+  padding: 10px 8px 6px;
+  min-width: 0;
+}
+.viz figcaption { font-weight: 600; font-size: 0.9rem; padding: 0 4px 4px; }
+.viz svg { display: block; max-width: 100%; height: auto; overflow: visible; }
+.viz-grille { stroke: var(--viz-grille); stroke-width: 1; }
+.viz-zero { stroke: var(--texte-2); stroke-width: 1; }
+.viz-axe { fill: var(--texte-2); font-size: 11px; font-variant-numeric: tabular-nums; }
+.viz-axe-fort { fill: var(--texte); font-size: 12px; }
+.viz-note { fill: var(--texte-2); font-size: 10px; }
+.viz-label { fill: var(--texte); font-size: 11px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.viz-bande { fill: var(--texte-2); opacity: 0.08; }
+.viz-ligne { fill: none; stroke: var(--viz-plus); stroke-width: 2; stroke-linejoin: round; }
+.viz-repere { stroke: var(--texte-2); stroke-width: 1; stroke-dasharray: 3 3; }
+.viz-point { fill: var(--viz-plus); stroke: var(--surface); stroke-width: 2; }
+.viz-point-h { fill: var(--surface); stroke: var(--viz-plus); stroke-width: 2; }
+.viz-croix { stroke: var(--texte-2); stroke-width: 1; opacity: 0.5; }
+.viz-liaison { stroke: var(--texte-2); stroke-width: 1; stroke-dasharray: 2 2; }
+rect.viz-plus, .pastille.viz-plus { fill: var(--viz-plus); background: var(--viz-plus); }
+rect.viz-moins, .pastille.viz-moins { fill: var(--viz-moins); background: var(--viz-moins); }
+rect.viz-total, .pastille.viz-total { fill: var(--viz-total); background: var(--viz-total); }
+.viz-legende { margin: 4px 4px 2px; font-size: 0.8rem; color: var(--texte-2); display: flex; gap: 6px 12px; flex-wrap: wrap; align-items: center; }
+.pastille { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 4px; vertical-align: -1px; }
+.viz-tip {
+  position: absolute;
+  display: none;
+  pointer-events: none;
+  z-index: 10;
+  background: var(--surface);
+  color: var(--texte);
+  border: 1px solid var(--bord);
+  border-radius: 6px;
+  padding: 6px 9px;
+  font-size: 0.8rem;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.12);
+  max-width: 260px;
+}
+.viz-tip strong { font-variant-numeric: tabular-nums; }
