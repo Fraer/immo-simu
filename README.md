@@ -18,6 +18,10 @@ La fiscalité de l'acheteur est dans `acquereurs/<id>.json` (par défaut `sci-fl
 
 En SCI à l'IR, le résultat est calculé au réel foncier puis réparti par associé. Un déficit foncier du nouveau bien s'impute sur les autres revenus fonciers de la SCI (économie d'impôt). L'imputation sur le revenu global n'est pas modélisée.
 
+## Entête
+
+Logo attendu dans `assets/flv-invest-logo.png` (affiché en 40 px de haut, texte « FLV Invest » si absent). Version de l'application (semver) dans `js/version.js`.
+
 ## Lancer en local
 
 ```bash

@@ -1,5 +1,6 @@
 import { REGIMES, calculer, regimeParDefaut, scenarioParDefaut } from "./calc.js";
 import { cascade, sensibilitePrix, tornado } from "./charts.js";
+import { VERSION } from "./version.js";
 
 const BIEN_PAR_DEFAUT = "le-cannet-gr876";
 const ACQUEREUR_PAR_DEFAUT = "sci-flv";
@@ -391,6 +392,12 @@ function lireUrl() {
 }
 
 async function demarrer() {
+  $("#version").textContent = `v${VERSION}`;
+  const logo = $("#logo");
+  const sansLogo = () => { logo.hidden = true; $("#logo-texte").hidden = false; };
+  if (logo.complete && logo.naturalWidth === 0) sansLogo();
+  else logo.addEventListener("error", sansLogo);
+
   const id = new URLSearchParams(location.search).get("bien") ?? BIEN_PAR_DEFAUT;
   if (!/^[a-z0-9-]+$/.test(id)) throw new Error(`Identifiant de bien invalide : ${id}`);
   const rep = await fetch(`biens/${id}.json`);
