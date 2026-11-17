@@ -1,0 +1,92 @@
+{
+  "id": "le-cannet-gr876",
+  "titre": "4 pièces en rez-de-chaussée, Le Cannet (quartier Mairie)",
+  "source": "Annonce Boumann Immobilier réf. GR876 · étude du 12 novembre 2026",
+  "adresse": "Angle bd Sadi Carnot / rue de la Terrasse, 06110 Le Cannet",
+  "surface": 100.13,
+  "terrasse": 12,
+  "chambres": 3,
+  "dpe": "D",
+  "prixAffiche": 371000,
+  "estimation": { "bas": 300000, "central": 330000, "haut": 355000 },
+  "negociation": { "premiereOffre": 317500, "cible": 335000, "plafond": 350000 },
+  "valeurRenovee": 440000,
+  "travauxFourchette": [90000, 130000],
+
+  "defauts": {
+    "prix": 335000,
+    "notairePct": 7.5,
+    "travaux": 110000,
+    "mode": "vide",
+    "chargesCopro": 1600,
+    "taxeFonciere": 557,
+    "assurancePNO": 200,
+    "entretienPct": 1,
+    "gestionPct": 0,
+    "apport": 60000,
+    "taux": 3.3,
+    "duree": 25,
+    "assuranceEmprunteurPct": 0.3,
+    "tmi": 30,
+    "prelevementsSociauxPct": 17.2
+  },
+
+  "locations": {
+    "vide": {
+      "label": "Location vide",
+      "meuble": false,
+      "loyer": 1450,
+      "vacancePct": 4,
+      "note": "≈ 14,5 €/m², hypothèse de l'étude à confirmer auprès d'une agence."
+    },
+    "meuble": {
+      "label": "Location meublée",
+      "meuble": true,
+      "loyer": 1700,
+      "vacancePct": 8,
+      "note": "Hypothèse de l'étude, à confirmer."
+    },
+    "coloc": {
+      "label": "Colocation",
+      "meuble": true,
+      "loyerParChambre": 600,
+      "chambres": 3,
+      "chambresMax": 4,
+      "vacancePct": 10,
+      "note": "4e chambre possible en transformant le dressing (7,57 m²), coûts inclus dans les travaux."
+    }
+  },
+
+  "risques": [
+    {
+      "id": "bruit",
+      "label": "Bruit du boulevard",
+      "description": "Rez-de-chaussée sur axe circulant (bd Sadi Carnot) : loyer un peu plus bas, relocation plus lente.",
+      "effets": { "loyerPct": -5, "vacancePts": 3 }
+    },
+    {
+      "id": "emplacement",
+      "label": "RdC, exposition nord-est, couloir sombre",
+      "description": "Sécurité perçue du RdC, peu de soleil, 15 m² de couloir peu valorisables.",
+      "effets": { "loyerPct": -4, "vacancePts": 2 }
+    },
+    {
+      "id": "copro",
+      "label": "Gros travaux de copropriété",
+      "description": "Copro de 3 lots sans syndic pro probable : façade, toiture ou tour se répartissent sur 3 lots. Provision annuelle.",
+      "effets": { "provisionAn": 1500 }
+    },
+    {
+      "id": "taxeFonciere",
+      "label": "Taxe foncière sous-estimée",
+      "description": "557 € paraît très bas pour 100 m² ; à vérifier sur l'avis d'imposition.",
+      "effets": { "taxeFonciereAjout": 700 }
+    },
+    {
+      "id": "depassement",
+      "label": "Dépassement du budget travaux",
+      "description": "Ancien, électricité et plomberie d'origine, humidité possible en RdC.",
+      "effets": { "travauxPct": 15 }
+    }
+  ]
+}

@@ -1,0 +1,158 @@
+:root {
+  --bg: #f7f7f5;
+  --surface: #ffffff;
+  --texte: #1d1d1b;
+  --texte-2: #5f5f5a;
+  --bord: #e2e1dc;
+  --accent: #2f5d8a;
+  --positif: #2e7d4f;
+  --negatif: #b3402f;
+  --alerte-bg: #fff4e0;
+  --alerte-texte: #7a4b00;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #161615;
+    --surface: #1f1f1d;
+    --texte: #ecebe6;
+    --texte-2: #a3a29c;
+    --bord: #34332f;
+    --accent: #7fb0e0;
+    --positif: #6cc28f;
+    --negatif: #ec8a78;
+    --alerte-bg: #3a2c12;
+    --alerte-texte: #f2c97a;
+    color-scheme: dark;
+  }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--texte);
+  font: 15px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+header, main { max-width: 1200px; margin: 0 auto; padding: 0 16px; }
+header { padding-top: 24px; padding-bottom: 8px; }
+h1 { font-size: 1.4rem; margin: 0 0 4px; font-weight: 600; }
+#meta { margin: 0; color: var(--texte-2); }
+.note { color: var(--texte-2); font-size: 0.85rem; margin: 8px 0 0; }
+
+main {
+  display: grid;
+  grid-template-columns: minmax(0, 420px) minmax(0, 1fr);
+  gap: 24px;
+  padding-bottom: 40px;
+  align-items: start;
+}
+
+@media (max-width: 860px) {
+  main { grid-template-columns: minmax(0, 1fr); }
+  #resultats { order: -1; position: static !important; }
+}
+
+fieldset {
+  border: 1px solid var(--bord);
+  border-radius: 8px;
+  background: var(--surface);
+  margin: 0 0 16px;
+  padding: 12px 16px 14px;
+  min-width: 0;
+}
+legend { font-weight: 600; padding: 0 4px; }
+
+.champ { margin-top: 10px; }
+.ligne {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+.ligne label { flex: 1; }
+.saisie { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
+.unite { color: var(--texte-2); font-size: 0.85rem; min-width: 3.2em; }
+
+input[type="number"], select {
+  font: inherit;
+  color: inherit;
+  background: var(--bg);
+  border: 1px solid var(--bord);
+  border-radius: 6px;
+  padding: 3px 6px;
+}
+input[type="number"] { width: 6.5em; text-align: right; font-variant-numeric: tabular-nums; }
+input[type="range"] { width: 100%; accent-color: var(--accent); margin: 6px 0 0; }
+.aide { margin: 2px 0 0; font-size: 0.8rem; color: var(--texte-2); }
+
+.risque { display: flex; gap: 8px; align-items: flex-start; margin-top: 10px; }
+.risque input { margin-top: 4px; accent-color: var(--accent); }
+.risque label { display: flex; flex-direction: column; font-size: 0.9rem; }
+.risque span, .risque em { color: var(--texte-2); font-size: 0.82rem; }
+
+#resultats { position: sticky; top: 16px; }
+
+#kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+}
+.tuile {
+  background: var(--surface);
+  border: 1px solid var(--bord);
+  border-radius: 8px;
+  padding: 12px 14px;
+}
+.tuile-titre { font-size: 0.85rem; color: var(--texte-2); }
+.tuile-valeur { font-size: 1.7rem; font-weight: 600; font-variant-numeric: tabular-nums; margin: 2px 0; }
+.tuile-sous { font-size: 0.8rem; color: var(--texte-2); }
+.tuile.positif .tuile-valeur, tr.positif td { color: var(--positif); }
+.tuile.negatif .tuile-valeur, tr.negatif td { color: var(--negatif); }
+
+.alerte {
+  background: var(--alerte-bg);
+  color: var(--alerte-texte);
+  border-radius: 6px;
+  padding: 8px 12px;
+  margin: 12px 0 0;
+  font-size: 0.9rem;
+}
+
+.actions { display: flex; gap: 8px; flex-wrap: wrap; margin: 16px 0; }
+button {
+  font: inherit;
+  border-radius: 6px;
+  padding: 6px 12px;
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: var(--surface);
+  cursor: pointer;
+}
+button.secondaire { background: transparent; color: var(--accent); }
+
+#details {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--surface);
+  border: 1px solid var(--bord);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-variant-numeric: tabular-nums;
+}
+caption { text-align: left; font-weight: 600; padding: 0 0 6px; }
+th, td { padding: 5px 12px; border-top: 1px solid var(--bord); }
+th { text-align: left; font-weight: 400; color: var(--texte-2); }
+td { text-align: right; white-space: nowrap; }
+tr.total th, tr.total td { font-weight: 600; color: var(--texte); }
+tr.total.positif td { color: var(--positif); }
+tr.total.negatif td { color: var(--negatif); }

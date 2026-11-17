@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Simulation locative</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script type="module" src="js/app.js"></script>
+</head>
+<body>
+  <header>
+    <h1 id="titre">Chargement…</h1>
+    <p id="meta"></p>
+    <p id="source" class="note"></p>
+  </header>
+
+  <main>
+    <section id="controles" aria-label="Hypothèses"></section>
+
+    <section id="resultats" aria-label="Résultats" aria-live="polite">
+      <div id="kpis"></div>
+      <div id="alertes"></div>
+      <div class="actions">
+        <button id="partager" type="button">Copier le lien du scénario</button>
+        <button id="reinit" type="button" class="secondaire">Réinitialiser</button>
+      </div>
+      <div id="details"></div>
+      <p class="note">
+        Brut = loyers théoriques / coût total (prix + notaire + travaux).
+        Net = loyers encaissés après vacance, moins charges propriétaire.
+        Net-net = net moins impôt et prélèvements sociaux.
+        Cash-flow = net moins crédit et impôt. Estimations indicatives, pas un conseil fiscal ou financier.
+      </p>
+    </section>
+  </main>
+</body>
+</html>
