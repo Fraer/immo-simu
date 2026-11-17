@@ -49,7 +49,9 @@ header, main { max-width: 1200px; margin: 0 auto; padding: 0 16px; }
 header { padding-top: 24px; padding-bottom: 8px; }
 .entete-ligne { display: flex; align-items: center; gap: 16px; margin-bottom: 6px; }
 .entete-ligne h1 { flex: 1; min-width: 0; margin: 0; }
-.entete-ligne .version { margin-left: auto; }
+.entete-droite { margin-left: auto; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+.entete-droite .actions { display: flex; gap: 4px; }
+.entete-droite button { font-size: 0.75rem; padding: 1px 8px; white-space: nowrap; }
 @media (max-width: 640px) {
   .entete-ligne { flex-wrap: wrap; gap: 8px 16px; }
   .entete-ligne h1 { order: 1; flex-basis: 100%; }
@@ -182,7 +184,6 @@ button.info:hover, button.info:focus-visible { border-color: var(--accent); colo
   font-size: 0.9rem;
 }
 
-.actions { display: flex; gap: 8px; flex-wrap: wrap; margin: 16px 0; }
 button {
   font: inherit;
   border-radius: 6px;
@@ -217,7 +218,7 @@ tr.total.positif td { color: var(--positif); }
 tr.total.negatif td { color: var(--negatif); }
 
 /* ---------- Charts ---------- */
-#graphiques { display: grid; gap: 16px; margin-bottom: 16px; }
+#graphiques { display: grid; gap: 16px; margin: 16px 0; }
 .g-paire { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
 .viz {
   margin: 0;

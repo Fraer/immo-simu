@@ -13,7 +13,13 @@
       <img id="logo" src="assets/flv-invest-logo.svg" alt="FLV Invest" height="40">
       <span id="logo-texte" hidden>FLV Invest</span>
       <h1 id="titre">Chargement…</h1>
-      <span id="version" class="version"></span>
+      <div class="entete-droite">
+        <span id="version" class="version"></span>
+        <div class="actions">
+          <button id="partager" type="button" class="secondaire">Copier le lien</button>
+          <button id="reinit" type="button" class="secondaire">Réinitialiser</button>
+        </div>
+      </div>
     </div>
     <p id="meta"></p>
     <p id="source" class="note"></p>
@@ -25,10 +31,6 @@
     <section id="resultats" aria-label="Résultats">
       <div id="kpis" aria-live="polite"></div>
       <div id="alertes"></div>
-      <div class="actions">
-        <button id="partager" type="button">Copier le lien du scénario</button>
-        <button id="reinit" type="button" class="secondaire">Réinitialiser</button>
-      </div>
       <section id="graphiques" aria-label="Graphiques">
         <div id="g-sensibilite" class="g-paire"></div>
         <div id="g-tornado"></div>

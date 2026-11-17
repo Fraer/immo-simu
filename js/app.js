@@ -479,7 +479,7 @@ async function demarrer() {
     } catch {
       b.textContent = "Copiez l'adresse de la page";
     }
-    setTimeout(() => (b.textContent = "Copier le lien du scénario"), 2000);
+    setTimeout(() => (b.textContent = "Copier le lien"), 2000);
   });
 }
 
