@@ -17,7 +17,7 @@
     "prix": 335000,
     "notairePct": 7.5,
     "travaux": 110000,
-    "mode": "vide",
+    "mode": "coloc",
     "chargesCopro": 1600,
     "taxeFonciere": 557,
     "assurancePNO": 200,

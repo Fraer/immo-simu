@@ -401,7 +401,7 @@ function changerMode(mode) {
 function ecrireUrl() {
   const ref = scenarioParDefaut(bien, s.mode, acquereur);
   const p = new URLSearchParams();
-  if (s.mode !== bien.defauts.mode) p.set("mode", s.mode);
+  p.set("mode", s.mode); // always explicit, so shared links survive a change of default mode
   for (const [k, v] of Object.entries(s)) {
     if (k === "mode" || k === "risques") continue;
     if (v !== ref[k]) p.set(k, v);
