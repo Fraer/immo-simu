@@ -141,7 +141,7 @@ function info(cle) {
 }
 
 // Label text followed by its "i" button when the glossary explains it.
-const etiquette = (texte, cle) => el("span", { class: "etiquette" }, texte, info(cle));
+const etiquette = (texte, cle) => el("span", { class: "etiquette" }, el("span", {}, texte), info(cle));
 
 function rendreControles() {
   const racine = $("#controles");

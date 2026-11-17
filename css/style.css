@@ -117,9 +117,10 @@ input[type="number"], select {
 }
 input[type="number"] { width: 6.5em; text-align: right; font-variant-numeric: tabular-nums; }
 input[type="range"] { width: 100%; accent-color: var(--accent); margin: 6px 0 0; }
-.etiquette { display: inline; }
+.etiquette { display: inline-flex; align-items: center; gap: 6px; }
+.tuile-titre .etiquette > span { white-space: nowrap; }
 .fixe { font-variant-numeric: tabular-nums; }
-.info-ancre { display: inline-flex; vertical-align: -3px; margin-left: 5px; }
+.info-ancre { display: inline-flex; flex: none; }
 button.info {
   width: 18px; height: 18px; padding: 0;
   border-radius: 50%;
@@ -228,7 +229,7 @@ tr.total.negatif td { color: var(--negatif); }
   padding: 10px 8px 6px;
   min-width: 0;
 }
-.viz figcaption { font-weight: 600; font-size: 0.9rem; padding: 0 4px 4px; }
+.viz figcaption { font-weight: 600; font-size: 0.9rem; padding: 0 4px 4px; display: flex; align-items: center; gap: 6px; }
 .viz svg { display: block; max-width: 100%; height: auto; overflow: visible; }
 .viz-grille { stroke: var(--viz-grille); stroke-width: 1; }
 .viz-zero { stroke: var(--texte-2); stroke-width: 1; }
